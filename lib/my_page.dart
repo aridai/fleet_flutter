@@ -1,5 +1,8 @@
 import 'dart:ui';
 
+import 'package:fleet_flutter/FleetCanvas.dart';
+import 'package:fleet_flutter/fleet_element.dart';
+import 'package:fleet_flutter/my_page_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -13,31 +16,25 @@ class MyPage extends StatefulWidget {
 class _MyPageState extends State<MyPage> {
   final _key = GlobalKey();
 
+  late final MyPageBloc bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    bloc = MyPageBloc();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('FleetFlutter')),
       body: Center(
         child: SizedBox(
-          width: 320,
-          height: 280,
+          width: 720 / 2.5,
+          height: 1280 / 2.5,
           child: RepaintBoundary(
             key: _key,
-            child: Container(
-              color: Colors.blue,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text('Hello'),
-                    SizedBox(height: 16),
-                    FlutterLogo(size: 32),
-                    SizedBox(height: 16),
-                    Text('🍣'),
-                  ],
-                ),
-              ),
-            ),
+            child: _buildContent(),
           ),
         ),
       ),
@@ -48,6 +45,39 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
+  @override
+  void dispose() {
+    bloc.dispose();
+    super.dispose();
+  }
+
+  //  メインコンテンツを生成する。
+  Widget _buildContent() {
+    return StreamBuilder<List<FleetElement>>(
+      initialData: const [],
+      stream: bloc.elements,
+      builder: (context, snapshot) {
+        final elements = snapshot.requireData;
+
+        return StreamBuilder<int?>(
+          initialData: null,
+          stream: bloc.focusedIndex,
+          builder: (context, snapshot) {
+            final focusedIndex = snapshot.data;
+
+            return FleetCanvas(
+              elements: elements,
+              focusedIndex: focusedIndex,
+              onFocusRequested: bloc.onFocusRequested,
+              onInteracted: bloc.onInteracted,
+            );
+          },
+        );
+      },
+    );
+  }
+
+  //  Fleet描画部分をキャプチャする。
   Future<void> _capture() async {
     final boundary =
         _key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
@@ -55,6 +85,7 @@ class _MyPageState extends State<MyPage> {
     final byteData = await image.toByteData(format: ImageByteFormat.png);
     final bytes = byteData!.buffer.asUint8List();
 
+    //  とりあえずダイアログで表示させてみる。
     await showDialog<void>(
       context: context,
       builder: (context) {
