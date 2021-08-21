@@ -5,5 +5,6 @@ import 'package:flutter/material.dart';
 void main() {
   WebOutputView.init();
 
-  runApp(MyApp());
+  //  ↓ ここに余計なスペースを入れてみる。
+  runApp( MyApp());
 }
