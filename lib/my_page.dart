@@ -1,8 +1,10 @@
 import 'dart:ui';
 
-import 'package:fleet_flutter/FleetCanvas.dart';
+import 'package:fleet_flutter/fleet_canvas.dart';
 import 'package:fleet_flutter/fleet_element.dart';
 import 'package:fleet_flutter/my_page_bloc.dart';
+import 'package:fleet_flutter/output_view.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -91,7 +93,11 @@ class _MyPageState extends State<MyPage> {
       builder: (context) {
         return AlertDialog(
           title: const Text('キャプチャ結果'),
-          content: Image.memory(bytes),
+          content: OutputView(
+            imageBytes: bytes,
+            width: image.width,
+            height: image.height,
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
