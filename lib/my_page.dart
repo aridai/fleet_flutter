@@ -28,8 +28,9 @@ class _MyPageState extends State<MyPage> {
 
   @override
   Widget build(BuildContext context) {
+    //  constを指定したほうがよいという指摘 ↓ (prefer_const_constructors)が来る。
     return Scaffold(
-      appBar: AppBar(title: const Text('FleetFlutter')),
+      appBar: AppBar(title: Text('FleetFlutter')),
       body: DefaultTextStyle.merge(
         style: const TextStyle(
           fontFamily: 'NotoSansCJK',
