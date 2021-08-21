@@ -23,3 +23,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: NotoColorEmoji
+      fonts:
+        - asset: assets/NotoColorEmoji.ttf
+    - family: NotoSansCJK
+      fonts:
+        - asset: assets/NotoSansCJKjp-Regular.otf

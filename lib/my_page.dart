@@ -30,13 +30,19 @@ class _MyPageState extends State<MyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('FleetFlutter')),
-      body: Center(
-        child: SizedBox(
-          width: 720 / 2.5,
-          height: 1280 / 2.5,
-          child: RepaintBoundary(
-            key: _key,
-            child: _buildContent(),
+      body: DefaultTextStyle.merge(
+        style: const TextStyle(
+          fontFamily: 'NotoSansCJK',
+          fontFamilyFallback: ['NotoColorEmoji'],
+        ),
+        child: Center(
+          child: SizedBox(
+            width: 720 / 2.5,
+            height: 1280 / 2.5,
+            child: RepaintBoundary(
+              key: _key,
+              child: _buildContent(),
+            ),
           ),
         ),
       ),
