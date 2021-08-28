@@ -7,10 +7,12 @@ import 'package:rxdart/rxdart.dart';
 class MyPageBloc {
   final _elements = BehaviorSubject<List<FleetElement>>.seeded(
     [
-      const FleetElement.text('Flutterで', Offset(0, -50), 1.5, 0.0),
-      const FleetElement.text('Fleetみたいなやつを', Offset.zero, 1.5, 0.0),
-      const FleetElement.text('つくってみた', Offset(0, 50), 1.5, 0.0),
-      const FleetElement.text('🍣', Offset(0, 100), 1.5, 0.0),
+      const FleetElement.text('FleetFlutter', Offset(0, -150), 1.5, 0.0),
+      const FleetElement.text('Flutterで', Offset(0, -100), 1.5, 0.0),
+      const FleetElement.text('Fleetみたいなやつを', Offset(0, -50), 1.5, 0.0),
+      const FleetElement.text('つくってみた', Offset(0, 0), 1.5, 0.0),
+      const FleetElement.text('🍣', Offset(0, 50), 1.5, 0.0),
+      const FleetElement.text('㊗️日本語も使えます🎉', Offset(0, 100), 1.5, 0.0),
     ],
   );
 
