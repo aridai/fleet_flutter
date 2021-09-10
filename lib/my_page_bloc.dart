@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:fleet_flutter/fleet_element.dart';
@@ -56,23 +57,37 @@ class MyPageBloc {
 
   /// 絵文字が選択されたとき。
   void onEmojiSelected(String emoji) {
-    //  新たに絵文字用を生成する。
+    //  新たに絵文字要素を追加する。
     final element = FleetElement.emoji(emoji, Offset.zero, 1.0, 0.0);
+    _addNewElement(element);
+  }
 
-    final elements = _elements.value;
-    final size = elements.length + 1;
-    final lastIndex = size - 1;
-    final updatedElements =
-        List.generate(size, (i) => i != lastIndex ? elements[i] : element);
-
-    //  絵文字要素を追加し、フォーカスを当てる。
-    _elements.value = updatedElements;
-    _focusedIndex.value = lastIndex;
+  /// 画像が選択されたとき。
+  void onImageSelected(String fileName, Uint8List imageBytes) {
+    //  新たに画像要素を追加する。
+    final element =
+        FleetElement.image(fileName, imageBytes, Offset.zero, 1.0, 0.0);
+    _addNewElement(element);
   }
 
   /// 終了処理を行う。
   void dispose() {
     _elements.close();
     _focusedIndex.close();
+  }
+
+  //  新しい要素を追加をUIに反映させる。
+  //  (その要素にフォーカスがあたった状態になる。)
+  void _addNewElement(FleetElement element) {
+    //  既存の要素リストの末尾に新しい要素を使える。
+    final elements = _elements.value;
+    final size = elements.length + 1;
+    final lastIndex = size - 1;
+    final updatedElements =
+        List.generate(size, (i) => i != lastIndex ? elements[i] : element);
+
+    //  UIに反映させ、フォーカスがあたった状態にする。。
+    _elements.value = updatedElements;
+    _focusedIndex.value = lastIndex;
   }
 }

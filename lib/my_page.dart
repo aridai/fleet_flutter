@@ -9,6 +9,7 @@ import 'package:fleet_flutter/output_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:image_picker/image_picker.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({Key? key}) : super(key: key);
@@ -20,6 +21,7 @@ class MyPage extends StatefulWidget {
 class _MyPageState extends State<MyPage> {
   final _key = GlobalKey();
 
+  static final picker = ImagePicker();
   late final MyPageBloc bloc;
 
   @override
@@ -103,6 +105,25 @@ class _MyPageState extends State<MyPage> {
 
                 //  絵文字が選択された場合
                 if (emoji != null) bloc.onEmojiSelected(emoji);
+              },
+            ),
+
+            //  画像選択
+            ListTile(
+              leading: const Icon(Icons.photo),
+              title: const Text('画像選択'),
+              onTap: () async {
+                Navigator.pop(context);
+
+                //  画像を選択させる。
+                final image =
+                    await picker.pickImage(source: ImageSource.gallery);
+
+                //  画像が選択されたとき。
+                if (image != null) {
+                  final bytes = await image.readAsBytes();
+                  bloc.onImageSelected(image.name, bytes);
+                }
               },
             ),
 

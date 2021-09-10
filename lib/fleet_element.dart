@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -25,6 +26,8 @@ class FleetElement with _$FleetElement {
 
   /// 画像要素 (仮)
   const factory FleetElement.image(
+    String fileName,
+    Uint8List imageBytes,
     Offset pos,
     double scale,
     double angleInRad,
