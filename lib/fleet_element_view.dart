@@ -1,3 +1,4 @@
+import 'package:fleet_flutter/emoji/native_emoji_view.dart';
 import 'package:fleet_flutter/fleet_element.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +10,9 @@ class FleetElementView extends StatelessWidget {
     required this.isFocused,
     required this.onFocusRequested,
   }) : super(key: key);
+
+  //  デフォルトの絵文字要素のサイズ
+  static const _defaultEmojiSize = 32.0;
 
   /// Fleet要素
   final FleetElement element;
@@ -63,7 +67,10 @@ class FleetElementView extends StatelessWidget {
   Widget _buildContent() {
     return element.map(
       text: (textElement) => Text(textElement.text),
-      emoji: (emojiElement) => Image.memory(emojiElement.emojiImage),
+      emoji: (emojiElement) => NativeEmojiView(
+        emoji: emojiElement.emoji,
+        size: _defaultEmojiSize,
+      ),
       image: (imageElement) => const Text('TODO: 画像表示'),
     );
   }

@@ -56,7 +56,7 @@ class _FleetCanvasState extends State<FleetCanvas> {
       onScaleUpdate: _onScaleUpdate,
       onScaleEnd: _onScaleEnd,
       child: Container(
-        color: Colors.black54,
+        color: Colors.grey.withOpacity(0.5),
         child: Stack(children: children),
       ),
     );

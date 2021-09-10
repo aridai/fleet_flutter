@@ -27,6 +27,3 @@ flutter:
     - family: SawarabiGothic
       fonts:
         - asset: assets/SawarabiGothic-Regular.ttf
-    - family: NotoColorEmoji
-      fonts:
-        - asset: assets/NotoColorEmoji.ttf

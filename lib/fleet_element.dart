@@ -19,7 +19,6 @@ class FleetElement with _$FleetElement {
   /// 絵文字要素
   const factory FleetElement.emoji(
     String emoji,
-    Uint8List emojiImage,
     Offset pos,
     double scale,
     double angleInRad,

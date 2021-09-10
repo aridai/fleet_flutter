@@ -5,8 +5,9 @@ import 'dart:typed_data';
 import 'package:fleet_flutter/platform_view.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:universal_html/html.dart';
+import 'package:universal_html/html.dart' hide Text;
 
+/// 絵文字を実行環境のフォントで描画するView
 class NativeEmojiView extends StatelessWidget {
   const NativeEmojiView({
     Key? key,
@@ -17,8 +18,13 @@ class NativeEmojiView extends StatelessWidget {
 
   static const _defaultSize = 256.0;
 
+  /// 絵文字
   final String emoji;
+
+  /// キャプチャ可能な描画方法を行うかどうか。
   final bool capturable;
+
+  /// 描画サイズ
   final double? size;
 
   @override
@@ -37,6 +43,7 @@ class NativeEmojiView extends StatelessWidget {
 }
 
 //  絵文字用のView
+//  (軽量であるが、キャプチャを行うことができない。)
 class _NativeEmojiView extends StatefulWidget {
   const _NativeEmojiView({
     Key? key,
@@ -53,6 +60,7 @@ class _NativeEmojiView extends StatefulWidget {
 
 class _NativeEmojiViewState extends State<_NativeEmojiView> {
   static const viewType = 'NATIVE_EMOJI_VIEW_TYPE';
+  static final validator = NodeValidatorBuilder.common()..allowInlineStyles();
 
   //  HtmlElementの保持用Map
   //  (HtmlElementViewがViewに登録されてから、
@@ -74,8 +82,7 @@ class _NativeEmojiViewState extends State<_NativeEmojiView> {
           ..style.width = '100%'
           ..style.height = '100%'
           ..style.textAlign = 'center'
-          ..style.verticalAlign = 'middle'
-          ..style.backgroundColor = 'blue';
+          ..style.verticalAlign = 'middle';
         elementMap![id] = element;
 
         return element;
@@ -90,31 +97,35 @@ class _NativeEmojiViewState extends State<_NativeEmojiView> {
       height: widget.size,
       child: HtmlElementView(
         viewType: viewType,
-        onPlatformViewCreated: (id) {
-          final element = elementMap![id]!;
-          elementMap!.remove(id);
-
-          final size = '${widget.size}px';
-          final span = '<span style="width: $size; height: $size; line-height: $size; position: absolute; left: 0; top: 0; font: $size emoji;">${widget.emoji}</span>';
-          element.style.width = size;
-          element.style.height = size;
-          //element.style.font = '$size emoji';
-          //element.setInnerHtml(span);
-          element.append(
-            SpanElement()
-              ..style.position = 'absolute'
-              ..style.left = '0'
-              ..style.top = '0'
-              ..style.width = '${widget.size}px'
-              ..style.height = '${widget.size}px'
-              //..style.lineHeight = '${widget.size}px'
-              ..style.font = '${widget.size}px emoji'
-              ..text = widget.emoji
-              //..styleMap!.append('line-height', '${widget.size}px'),
-          );
-        },
+        onPlatformViewCreated: onPlatformViewCreated,
       ),
     );
+  }
+
+  //  HTML要素が生成されたとき。
+  void onPlatformViewCreated(int id) {
+    final element = elementMap![id]!;
+    elementMap!.remove(id);
+
+    //  spanタグを文字列で設定する。
+    //  (SpanElementをappend()する設定方法では、
+    //  line-heightスタイル属性が正しく設定できなかったため。)
+    final size = '${widget.size}px';
+    final styles = {
+      'width': size,
+      'height': size,
+      'line-height': '$size !important',
+      'position': 'absolute',
+      'left': '0',
+      'top': '0',
+      'font': '$size emoji',
+    };
+    final styleAttr =
+        styles.entries.map((e) => '${e.key}: ${e.value};').join(' ');
+    final span = '<span style="$styleAttr">${widget.emoji}</span>';
+    element.style.width = size;
+    element.style.height = size;
+    element.setInnerHtml(span, validator: validator);
   }
 }
 

@@ -1,7 +1,7 @@
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:fleet_flutter/emoji/emoji_picker.dart';
-import 'package:fleet_flutter/emoji/native_emoji_view.dart';
 import 'package:fleet_flutter/fleet_canvas.dart';
 import 'package:fleet_flutter/fleet_element.dart';
 import 'package:fleet_flutter/my_page_bloc.dart';
@@ -33,13 +33,9 @@ class _MyPageState extends State<MyPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('FleetFlutter')),
       body: Center(
-        child: SizedBox(
-          width: 720 / 2.5,
-          height: 1280 / 2.5,
-          child: RepaintBoundary(
-            key: _key,
-            child: _buildContent(),
-          ),
+        child: RepaintBoundary(
+          key: _key,
+          child: _buildContent(),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -57,13 +53,6 @@ class _MyPageState extends State<MyPage> {
 
   //  メインコンテンツを生成する。
   Widget _buildContent() {
-    return Center(
-      child: Container(
-        color: Colors.pink,
-        child: const NativeEmojiView(emoji: '🍖'),
-      ),
-    );
-
     return StreamBuilder<List<FleetElement>>(
       initialData: const [],
       stream: bloc.elements,
@@ -90,24 +79,64 @@ class _MyPageState extends State<MyPage> {
 
   //  BottomSheetを表示する。
   void _showBottomSheet() {
+    //  (仮)
     showModalBottomSheet<void>(
       context: context,
       builder: (context) => BottomSheet(
         onClosing: () {},
-        builder: (context) => ListView(
+        builder: (context) => Wrap(
           children: [
+            //  絵文字選択
             ListTile(
               leading: const Icon(Icons.emoji_emotions),
               title: const Text('絵文字選択'),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute<void>(builder: (context) => EmojiPicker()),
-              ),
+              onTap: () async {
+                final navigator = Navigator.of(context);
+                navigator.pop();
+
+                //  絵文字選択 (仮) を開く。
+                final emoji = await navigator.push(
+                  MaterialPageRoute<String>(
+                    builder: (context) => EmojiPicker(),
+                  ),
+                );
+
+                //  絵文字が選択された場合
+                if (emoji != null) bloc.onEmojiSelected(emoji);
+              },
             ),
+
+            //  キャプチャ
             ListTile(
               leading: const Icon(Icons.photo_camera),
               title: const Text('キャプチャ'),
-              onTap: () => _capture(),
+              onTap: () async {
+                Navigator.of(context).pop();
+
+                //  キャンバスをキャプチャする。
+                final image = await _capture();
+
+                //  とりあえずダイアログで表示させてみる。
+                await showDialog<void>(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('キャプチャ結果'),
+                      content: OutputView(
+                        imageBytes: image.imageBytes,
+                        width: image.width,
+                        height: image.height,
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
             ),
           ],
         ),
@@ -116,32 +145,22 @@ class _MyPageState extends State<MyPage> {
   }
 
   //  Fleet描画部分をキャプチャする。
-  Future<void> _capture() async {
+  Future<CapturedImage> _capture() async {
     final boundary =
         _key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
     final image = await boundary.toImage();
     final byteData = await image.toByteData(format: ImageByteFormat.png);
     final bytes = byteData!.buffer.asUint8List();
 
-    //  とりあえずダイアログで表示させてみる。
-    await showDialog<void>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('キャプチャ結果'),
-          content: OutputView(
-            imageBytes: bytes,
-            width: image.width,
-            height: image.height,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
+    return CapturedImage(image.width, image.height, bytes);
   }
+}
+
+//  キャプチャされた画像
+class CapturedImage {
+  const CapturedImage(this.width, this.height, this.imageBytes);
+
+  final int width;
+  final int height;
+  final Uint8List imageBytes;
 }
