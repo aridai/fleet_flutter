@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:fleet_flutter/emoji/emoji_picker.dart';
+import 'package:fleet_flutter/emoji/native_emoji_view.dart';
 import 'package:fleet_flutter/fleet_canvas.dart';
 import 'package:fleet_flutter/fleet_element.dart';
 import 'package:fleet_flutter/my_page_bloc.dart';
@@ -41,8 +43,8 @@ class _MyPageState extends State<MyPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.photo_camera),
-        onPressed: () => _capture(),
+        child: const Icon(Icons.add),
+        onPressed: () => _showBottomSheet(),
       ),
     );
   }
@@ -55,6 +57,13 @@ class _MyPageState extends State<MyPage> {
 
   //  メインコンテンツを生成する。
   Widget _buildContent() {
+    return Center(
+      child: Container(
+        color: Colors.pink,
+        child: const NativeEmojiView(emoji: '🍖'),
+      ),
+    );
+
     return StreamBuilder<List<FleetElement>>(
       initialData: const [],
       stream: bloc.elements,
@@ -76,6 +85,33 @@ class _MyPageState extends State<MyPage> {
           },
         );
       },
+    );
+  }
+
+  //  BottomSheetを表示する。
+  void _showBottomSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (context) => BottomSheet(
+        onClosing: () {},
+        builder: (context) => ListView(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.emoji_emotions),
+              title: const Text('絵文字選択'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute<void>(builder: (context) => EmojiPicker()),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_camera),
+              title: const Text('キャプチャ'),
+              onTap: () => _capture(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

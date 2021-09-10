@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -14,6 +15,15 @@ class FleetElement with _$FleetElement {
     double scale,
     double angleInRad,
   ) = FleetTextElement;
+
+  /// 絵文字要素
+  const factory FleetElement.emoji(
+    String emoji,
+    Uint8List emojiImage,
+    Offset pos,
+    double scale,
+    double angleInRad,
+  ) = FleetEmojiElement;
 
   /// 画像要素 (仮)
   const factory FleetElement.image(

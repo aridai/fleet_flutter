@@ -63,6 +63,7 @@ class FleetElementView extends StatelessWidget {
   Widget _buildContent() {
     return element.map(
       text: (textElement) => Text(textElement.text),
+      emoji: (emojiElement) => Image.memory(emojiElement.emojiImage),
       image: (imageElement) => const Text('TODO: 画像表示'),
     );
   }
