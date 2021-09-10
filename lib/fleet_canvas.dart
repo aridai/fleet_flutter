@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
-import 'package:fleet_flutter/fleet_element_view.dart';
 import 'package:fleet_flutter/fleet_element.dart';
+import 'package:fleet_flutter/fleet_element_view.dart';
 import 'package:flutter/material.dart';
 
 /// Fleet要素のフォーカス要求を通知するコールバック
