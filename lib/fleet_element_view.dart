@@ -71,7 +71,7 @@ class FleetElementView extends StatelessWidget {
         emoji: emojiElement.emoji,
         size: _defaultEmojiSize,
       ),
-      image: (imageElement) => const Text('TODO: 画像表示'),
+      image: (imageElement) => Image.memory(imageElement.imageBytes),
     );
   }
 
