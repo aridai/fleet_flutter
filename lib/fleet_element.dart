@@ -15,6 +15,14 @@ class FleetElement with _$FleetElement {
     double angleInRad,
   ) = FleetTextElement;
 
+  /// 絵文字要素
+  const factory FleetElement.emoji(
+    String emoji,
+    Offset pos,
+    double scale,
+    double angleInRad,
+  ) = FleetEmojiElement;
+
   /// 画像要素 (仮)
   const factory FleetElement.image(
     Offset pos,

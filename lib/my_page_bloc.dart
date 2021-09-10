@@ -11,8 +11,8 @@ class MyPageBloc {
       const FleetElement.text('Flutterで', Offset(0, -100), 1.5, 0.0),
       const FleetElement.text('Fleetみたいなやつを', Offset(0, -50), 1.5, 0.0),
       const FleetElement.text('つくってみた', Offset(0, 0), 1.5, 0.0),
-      const FleetElement.text('🍣', Offset(0, 50), 1.5, 0.0),
-      const FleetElement.text('㊗️日本語も使えます🎉', Offset(0, 100), 1.5, 0.0),
+      const FleetElement.text('日本語も使えます!', Offset(0, 50), 1.5, 0.0),
+      const FleetElement.emoji('🍣', Offset(0, 150), 2.0, 0.0),
     ],
   );
 
@@ -52,6 +52,22 @@ class MyPageBloc {
       (i) => i == index ? updatedElement : _elements.value[i],
     );
     _elements.value = updatedElements;
+  }
+
+  /// 絵文字が選択されたとき。
+  void onEmojiSelected(String emoji) {
+    //  新たに絵文字用を生成する。
+    final element = FleetElement.emoji(emoji, Offset.zero, 1.0, 0.0);
+
+    final elements = _elements.value;
+    final size = elements.length + 1;
+    final lastIndex = size - 1;
+    final updatedElements =
+        List.generate(size, (i) => i != lastIndex ? elements[i] : element);
+
+    //  絵文字要素を追加し、フォーカスを当てる。
+    _elements.value = updatedElements;
+    _focusedIndex.value = lastIndex;
   }
 
   /// 終了処理を行う。

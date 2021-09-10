@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
-import 'package:fleet_flutter/fleet_element_view.dart';
 import 'package:fleet_flutter/fleet_element.dart';
+import 'package:fleet_flutter/fleet_element_view.dart';
 import 'package:flutter/material.dart';
 
 /// Fleet要素のフォーカス要求を通知するコールバック
@@ -56,7 +56,7 @@ class _FleetCanvasState extends State<FleetCanvas> {
       onScaleUpdate: _onScaleUpdate,
       onScaleEnd: _onScaleEnd,
       child: Container(
-        color: Colors.black54,
+        color: Colors.grey.withOpacity(0.5),
         child: Stack(children: children),
       ),
     );
