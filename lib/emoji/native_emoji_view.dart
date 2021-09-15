@@ -149,6 +149,20 @@ class _CapturableNativeEmojiView extends StatefulWidget {
 class _CapturableNativeEmojiViewState
     extends State<_CapturableNativeEmojiView> {
   static const viewType = 'CAPTURABLE_NATIVE_EMOJI_VIEW_TYPE';
+  static const canvasSize = 300;
+  static const canvasFontSize = 256;
+  static const applePlatforms = ['iPhone', 'iPod', 'iPad', 'Mac'];
+  static const emojiFonts = '"apple color emoji", '
+      '"segoe ui emoji", '
+      '"noto color emoji", '
+      '"android emoji", '
+      '"emojisymbols", '
+      '"emojione mozilla", '
+      '"twemoji mozilla", '
+      '"segoe ui symbol"';
+
+  static late final bool isApplePlatform = applePlatforms
+      .any((p) => window.navigator.platform?.contains(p) ?? false);
 
   //  CanvasElementの保持用Map
   //  (HtmlElementViewがViewに登録されてから、
@@ -169,9 +183,9 @@ class _CapturableNativeEmojiViewState
       elementMap = HashMap<int, CanvasElement>();
 
       registerViewFactory(viewType, (id) {
-        final element = CanvasElement(width: 280, height: 280)
-          ..style.width = '280px'
-          ..style.height = '280px';
+        final element = CanvasElement(width: canvasSize, height: canvasSize)
+          ..style.width = '${canvasSize}px'
+          ..style.height = '${canvasSize}px';
         elementMap![id] = element;
 
         return element;
@@ -208,6 +222,7 @@ class _CapturableNativeEmojiViewState
     elementMap!.remove(id);
 
     drawEmoji(canvas, widget.emoji);
+    captureEmojiImage(canvas);
   }
 
   //  絵文字を描画する。
@@ -218,10 +233,13 @@ class _CapturableNativeEmojiViewState
     context.clearRect(0, 0, width, height);
     context.textAlign = 'center';
     context.textBaseline = 'middle';
-    context.font = '256px emoji';
+    context.font =
+        '${canvasFontSize}px ${isApplePlatform ? 'emoji' : emojiFonts}';
     context.fillText(emoji, width / 2, height / 2, width);
+  }
 
-    //  絵文字の画像データを生成してWidgetを更新する。
+  //  絵文字の画像データを生成してWidgetを更新する。
+  void captureEmojiImage(CanvasElement canvas) {
     const metaPrefix = 'data:image/png;base64,';
     final base64Emoji = canvas.toDataUrl().substring(metaPrefix.length);
     final imageBytes = base64Decode(base64Emoji);
