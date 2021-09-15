@@ -2,21 +2,18 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:fleet_flutter/fleet_element.dart';
+import 'package:fleet_flutter/fleet_element_factory.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// MyPageのBLoC
 class MyPageBloc {
-  final _elements = BehaviorSubject<List<FleetElement>>.seeded(
-    [
-      const FleetElement.text('FleetFlutter', Offset(0, -150), 1.5, 0.0),
-      const FleetElement.text('Flutterで', Offset(0, -100), 1.5, 0.0),
-      const FleetElement.text('Fleetみたいなやつを', Offset(0, -50), 1.5, 0.0),
-      const FleetElement.text('つくってみた', Offset(0, 0), 1.5, 0.0),
-      const FleetElement.text('日本語も使えます!', Offset(0, 50), 1.5, 0.0),
-      const FleetElement.emoji('🍣', Offset(0, 150), 2.0, 0.0),
-    ],
-  );
+  MyPageBloc(this._factory) {
+    _elements.value = [_factory.createText('Fleetを使ってみましょう!')];
+  }
 
+  final FleetElementFactory _factory;
+
+  final _elements = BehaviorSubject<List<FleetElement>>.seeded(const []);
   final _focusedIndex = BehaviorSubject<int?>.seeded(null);
 
   /// Fleetの要素リスト
@@ -58,15 +55,14 @@ class MyPageBloc {
   /// 絵文字が選択されたとき。
   void onEmojiSelected(String emoji) {
     //  新たに絵文字要素を追加する。
-    final element = FleetElement.emoji(emoji, Offset.zero, 1.0, 0.0);
+    final element = _factory.createEmoji(emoji);
     _addNewElement(element);
   }
 
   /// 画像が選択されたとき。
   void onImageSelected(String fileName, Uint8List imageBytes) {
     //  新たに画像要素を追加する。
-    final element =
-        FleetElement.image(fileName, imageBytes, Offset.zero, 1.0, 0.0);
+    final element = _factory.createImage(fileName, imageBytes);
     _addNewElement(element);
   }
 
@@ -86,7 +82,7 @@ class MyPageBloc {
     final updatedElements =
         List.generate(size, (i) => i != lastIndex ? elements[i] : element);
 
-    //  UIに反映させ、フォーカスがあたった状態にする。。
+    //  UIに反映させ、フォーカスがあたった状態にする。
     _elements.value = updatedElements;
     _focusedIndex.value = lastIndex;
   }

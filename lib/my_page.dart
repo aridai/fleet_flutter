@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:fleet_flutter/emoji/emoji_picker.dart';
 import 'package:fleet_flutter/fleet_canvas.dart';
 import 'package:fleet_flutter/fleet_element.dart';
+import 'package:fleet_flutter/fleet_element_factory.dart';
 import 'package:fleet_flutter/my_page_bloc.dart';
 import 'package:fleet_flutter/output_view.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,7 +28,7 @@ class _MyPageState extends State<MyPage> {
   @override
   void initState() {
     super.initState();
-    bloc = MyPageBloc();
+    bloc = MyPageBloc(FleetElementFactory());
   }
 
   @override
