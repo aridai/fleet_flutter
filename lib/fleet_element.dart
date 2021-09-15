@@ -10,6 +10,7 @@ part 'fleet_element.freezed.dart';
 class FleetElement with _$FleetElement {
   /// テキスト要素
   const factory FleetElement.text(
+    int id,
     String text,
     Offset pos,
     double scale,
@@ -18,14 +19,16 @@ class FleetElement with _$FleetElement {
 
   /// 絵文字要素
   const factory FleetElement.emoji(
+    int id,
     String emoji,
     Offset pos,
     double scale,
     double angleInRad,
   ) = FleetEmojiElement;
 
-  /// 画像要素 (仮)
+  /// 画像要素
   const factory FleetElement.image(
+    int id,
     String fileName,
     Uint8List imageBytes,
     Offset pos,

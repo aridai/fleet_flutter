@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:fleet_flutter/emoji/emoji_picker.dart';
 import 'package:fleet_flutter/fleet_canvas.dart';
 import 'package:fleet_flutter/fleet_element.dart';
+import 'package:fleet_flutter/fleet_element_factory.dart';
 import 'package:fleet_flutter/my_page_bloc.dart';
 import 'package:fleet_flutter/output_view.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,7 +28,7 @@ class _MyPageState extends State<MyPage> {
   @override
   void initState() {
     super.initState();
-    bloc = MyPageBloc();
+    bloc = MyPageBloc(FleetElementFactory());
   }
 
   @override
@@ -71,7 +72,7 @@ class _MyPageState extends State<MyPage> {
               elements: elements,
               focusedIndex: focusedIndex,
               onFocusRequested: bloc.onFocusRequested,
-              onInteracted: bloc.onInteracted,
+              onInteracted: bloc.onElementInteracted,
             );
           },
         );
@@ -104,7 +105,7 @@ class _MyPageState extends State<MyPage> {
                 );
 
                 //  絵文字が選択された場合
-                if (emoji != null) bloc.onEmojiSelected(emoji);
+                if (emoji != null) bloc.onEmojiPicked(emoji);
               },
             ),
 
@@ -122,7 +123,7 @@ class _MyPageState extends State<MyPage> {
                 //  画像が選択されたとき。
                 if (image != null) {
                   final bytes = await image.readAsBytes();
-                  bloc.onImageSelected(image.name, bytes);
+                  bloc.onImagePicked(image.name, bytes);
                 }
               },
             ),
