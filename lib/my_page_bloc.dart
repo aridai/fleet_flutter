@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:fleet_flutter/collection_extensions.dart';
 import 'package:fleet_flutter/fleet_element.dart';
 import 'package:fleet_flutter/fleet_element_factory.dart';
 import 'package:rxdart/rxdart.dart';
@@ -25,17 +26,31 @@ class MyPageBloc {
 
   /// Fleet要素がタップされたとき。
   void onFocusRequested(int? index) {
-    _focusedIndex.add(index);
+    //  フォーカスが解除された場合
+    if (index == null) {
+      _focusedIndex.value = null;
+      return;
+    }
+
+    //  フォーカスが要求された場合
+    //  (対象要素を末尾に並び替える。)
+    final elements = _elements.value;
+    final lastIndex = elements.length - 1;
+    final updatedElements = elements.toTail(index);
+
+    _elements.value = updatedElements;
+    _focusedIndex.value = lastIndex;
   }
 
   /// Fleet要素に対する操作が行われたとき。
-  void onInteracted(
+  void onElementInteracted(
     int index,
     Offset translationDelta,
     double scaleDelta,
     double rotationDelta,
   ) {
-    final element = _elements.value[index];
+    final elements = _elements.value;
+    final element = elements[index];
     final updatedPos = element.pos + translationDelta;
     final updatedScale = element.scale * scaleDelta;
     final updatedAngle = element.angleInRad + rotationDelta;
@@ -45,22 +60,19 @@ class MyPageBloc {
       scale: updatedScale,
       angleInRad: updatedAngle,
     );
-    final updatedElements = List.generate(
-      _elements.value.length,
-      (i) => i == index ? updatedElement : _elements.value[i],
-    );
+    final updatedElements = elements.replace(index, updatedElement);
     _elements.value = updatedElements;
   }
 
   /// 絵文字が選択されたとき。
-  void onEmojiSelected(String emoji) {
+  void onEmojiPicked(String emoji) {
     //  新たに絵文字要素を追加する。
     final element = _factory.createEmoji(emoji);
     _addNewElement(element);
   }
 
   /// 画像が選択されたとき。
-  void onImageSelected(String fileName, Uint8List imageBytes) {
+  void onImagePicked(String fileName, Uint8List imageBytes) {
     //  新たに画像要素を追加する。
     final element = _factory.createImage(fileName, imageBytes);
     _addNewElement(element);
@@ -77,10 +89,8 @@ class MyPageBloc {
   void _addNewElement(FleetElement element) {
     //  既存の要素リストの末尾に新しい要素を使える。
     final elements = _elements.value;
-    final size = elements.length + 1;
-    final lastIndex = size - 1;
-    final updatedElements =
-        List.generate(size, (i) => i != lastIndex ? elements[i] : element);
+    final updatedElements = elements.append(element);
+    final lastIndex = updatedElements.length - 1;
 
     //  UIに反映させ、フォーカスがあたった状態にする。
     _elements.value = updatedElements;

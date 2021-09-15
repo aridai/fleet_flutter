@@ -43,6 +43,7 @@ class _FleetCanvasState extends State<FleetCanvas> {
     final children = widget.elements.mapIndexed(
       (index, element) {
         return FleetElementView(
+          key: ValueKey(element.id),
           element: element,
           isFocused: widget.focusedIndex == index,
           onFocusRequested: () => widget.onFocusRequested(index),

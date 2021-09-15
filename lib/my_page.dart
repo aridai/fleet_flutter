@@ -72,7 +72,7 @@ class _MyPageState extends State<MyPage> {
               elements: elements,
               focusedIndex: focusedIndex,
               onFocusRequested: bloc.onFocusRequested,
-              onInteracted: bloc.onInteracted,
+              onInteracted: bloc.onElementInteracted,
             );
           },
         );
@@ -105,7 +105,7 @@ class _MyPageState extends State<MyPage> {
                 );
 
                 //  絵文字が選択された場合
-                if (emoji != null) bloc.onEmojiSelected(emoji);
+                if (emoji != null) bloc.onEmojiPicked(emoji);
               },
             ),
 
@@ -123,7 +123,7 @@ class _MyPageState extends State<MyPage> {
                 //  画像が選択されたとき。
                 if (image != null) {
                   final bytes = await image.readAsBytes();
-                  bloc.onImageSelected(image.name, bytes);
+                  bloc.onImagePicked(image.name, bytes);
                 }
               },
             ),
