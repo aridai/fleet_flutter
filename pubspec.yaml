@@ -25,6 +25,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   fonts:
-    - family: SawarabiGothic
+    - family: KosugiMaru
       fonts:
-        - asset: assets/SawarabiGothic-Regular.ttf
+        - asset: assets/KosugiMaru-Regular.ttf
