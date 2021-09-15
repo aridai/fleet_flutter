@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
       title: 'FleetFlutter',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        fontFamily: kIsWeb ? 'SawarabiGothic' : null,
+        fontFamily: kIsWeb ? 'KosugiMaru' : null,
       ),
       home: const MyPage(),
     );
