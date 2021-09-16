@@ -7,6 +7,7 @@ import 'package:fleet_flutter/fleet_element.dart';
 import 'package:fleet_flutter/fleet_element_factory.dart';
 import 'package:fleet_flutter/my_page_bloc.dart';
 import 'package:fleet_flutter/output_view.dart';
+import 'package:fleet_flutter/text/text_input_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -89,6 +90,25 @@ class _MyPageState extends State<MyPage> {
         onClosing: () {},
         builder: (context) => Wrap(
           children: [
+            //  テキスト追加
+            ListTile(
+              leading: const Icon(Icons.text_fields),
+              title: const Text('テキスト追加'),
+              onTap: () async {
+                final navigator = Navigator.of(context);
+                navigator.pop();
+
+                //  テキスト入力ダイアログを開く。
+                final text = await showDialog<String>(
+                  context: context,
+                  builder: (context) => const TextInputDialog(),
+                );
+
+                //  正常に入力された場合
+                if (text != null) bloc.onTextEntered(null, text);
+              },
+            ),
+
             //  絵文字選択
             ListTile(
               leading: const Icon(Icons.emoji_emotions),

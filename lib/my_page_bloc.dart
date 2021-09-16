@@ -64,6 +64,20 @@ class MyPageBloc {
     _elements.value = updatedElements;
   }
 
+  /// テキストが入力されたとき。
+  void onTextEntered(int? index, String text) {
+    //  新規にテキストが追加されたとき。
+    if (index == null) {
+      final element = _factory.createText(text);
+      _addNewElement(element);
+    }
+
+    //  既存要素に対してテキストが入力されたとき。
+    else {
+      //  TODO
+    }
+  }
+
   /// 絵文字が選択されたとき。
   void onEmojiPicked(String emoji) {
     //  新たに絵文字要素を追加する。
