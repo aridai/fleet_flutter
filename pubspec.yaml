@@ -16,6 +16,8 @@ dependencies:
   path_provider: ^2.0.2
   share_plus: ^2.1.4
   image_picker: ^0.8.4
+  flutter_emoji:
+    git: https://github.com/cek-cek/flutter-emoji
 
 dev_dependencies:
   test: ^1.17.11
