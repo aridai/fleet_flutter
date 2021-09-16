@@ -104,7 +104,13 @@ class _EmojiPickerState extends State<EmojiPicker> {
         Padding(
           padding: const EdgeInsets.all(8),
           child: ElevatedButton(
-            onPressed: () => Navigator.pop(context, emojiSubject.value),
+            onPressed: () {
+              final parseResult = parseEmoji(emojiSubject.value);
+              final result =
+                  parseResult.isNotEmpty ? parseResult : emojiSubject.value;
+
+              Navigator.pop(context, result);
+            },
             child: const Text('選択'),
           ),
         ),
