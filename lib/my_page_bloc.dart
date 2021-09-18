@@ -15,42 +15,42 @@ class MyPageBloc {
   final FleetElementFactory _factory;
 
   final _elements = BehaviorSubject<List<FleetElement>>.seeded(const []);
-  final _focusedIndex = BehaviorSubject<int?>.seeded(null);
+  final _focusedId = BehaviorSubject<int?>.seeded(null);
 
   /// Fleetの要素リスト
   Stream<List<FleetElement>> get elements => _elements.stream;
 
-  /// フォーカス中のFleet要素のインデックス
+  /// フォーカス中のFleet要素のID
   /// (未選択時はnull)
-  Stream<int?> get focusedIndex => _focusedIndex.stream;
+  Stream<int?> get focusedId => _focusedId.stream;
 
-  /// Fleet要素がタップされたとき。
-  void onFocusRequested(int? index) {
-    //  フォーカスが解除された場合
-    if (index == null) {
-      _focusedIndex.value = null;
+  /// Fleet要素のフォーカスが要求されたとき。
+  void onFocusRequested(FleetElement? element) {
+    //  フォーカス解除が要求された場合
+    if (element == null) {
+      _focusedId.value = null;
       return;
     }
 
     //  フォーカスが要求された場合
-    //  (対象要素を末尾に並び替える。)
+    //  (必要に応じて対象要素を末尾に並び替える。)
     final elements = _elements.value;
-    final lastIndex = elements.length - 1;
+    final index = elements.indexWhere((e) => e.id == element.id);
     final updatedElements = elements.toTail(index);
 
     _elements.value = updatedElements;
-    _focusedIndex.value = lastIndex;
+    _focusedId.value = element.id;
   }
 
   /// Fleet要素に対する操作が行われたとき。
   void onElementInteracted(
-    int index,
+    FleetElement element,
     Offset translationDelta,
     double scaleDelta,
     double rotationDelta,
   ) {
     final elements = _elements.value;
-    final element = elements[index];
+    final index = elements.indexWhere((e) => e.id == element.id);
     final updatedPos = element.pos + translationDelta;
     final updatedScale = element.scale * scaleDelta;
     final updatedAngle = element.angleInRad + rotationDelta;
@@ -95,7 +95,7 @@ class MyPageBloc {
   /// 終了処理を行う。
   void dispose() {
     _elements.close();
-    _focusedIndex.close();
+    _focusedId.close();
   }
 
   //  新しい要素を追加をUIに反映させる。
@@ -104,10 +104,9 @@ class MyPageBloc {
     //  既存の要素リストの末尾に新しい要素を使える。
     final elements = _elements.value;
     final updatedElements = elements.append(element);
-    final lastIndex = updatedElements.length - 1;
 
     //  UIに反映させ、フォーカスがあたった状態にする。
     _elements.value = updatedElements;
-    _focusedIndex.value = lastIndex;
+    _focusedId.value = element.id;
   }
 }
