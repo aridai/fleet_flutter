@@ -118,5 +118,187 @@ void main() {
         expect(resultList[3], equals('要素E'));
       });
     });
+
+    group('並び替えのテスト', () {
+      group('上から下に移動するケース', () {
+        test('先頭から真ん中に移動するケース', () {
+          //  元のリスト
+          const sourceList = ['要素A', '要素B', '要素C', '要素D', '要素E'];
+
+          //  先頭から真ん中に移動させる。
+          final resultList = sourceList.reorder(0, 2);
+
+          //  要素数は変わらないはず。
+          expect(resultList.length, equals(5));
+
+          //  対象が正しく移動しているはず。
+          expect(resultList[2], equals('要素A'));
+
+          //  他の要素も正しく更新されているはず。
+          expect(resultList[0], equals('要素B'));
+          expect(resultList[1], equals('要素C'));
+          expect(resultList[3], equals('要素D'));
+          expect(resultList[4], equals('要素E'));
+        });
+
+        test('先頭から末尾に移動するケース', () {
+          //  元のリスト
+          const sourceList = ['要素A', '要素B', '要素C', '要素D', '要素E'];
+
+          //  先頭から末尾に移動させる。
+          final resultList = sourceList.reorder(0, 4);
+
+          //  要素数は変わらないはず。
+          expect(resultList.length, equals(5));
+
+          //  対象が正しく移動しているはず。
+          expect(resultList[4], equals('要素A'));
+
+          //  他の要素も正しく更新されているはず。
+          expect(resultList[0], equals('要素B'));
+          expect(resultList[1], equals('要素C'));
+          expect(resultList[2], equals('要素D'));
+          expect(resultList[3], equals('要素E'));
+        });
+
+        test('真ん中から末尾に移動するケース', () {
+          //  元のリスト
+          const sourceList = ['要素A', '要素B', '要素C', '要素D', '要素E'];
+
+          //  真ん中から末尾に移動させる。
+          final resultList = sourceList.reorder(2, 4);
+
+          //  要素数は変わらないはず。
+          expect(resultList.length, equals(5));
+
+          //  対象が正しく移動しているはず。
+          expect(resultList[4], equals('要素C'));
+
+          //  他の要素も正しく更新されているはず。
+          expect(resultList[0], equals('要素A'));
+          expect(resultList[1], equals('要素B'));
+          expect(resultList[2], equals('要素D'));
+          expect(resultList[3], equals('要素E'));
+        });
+      });
+
+      group('下からに移動するケース', () {
+        test('末尾から真ん中に移動するケース', () {
+          //  元のリスト
+          const sourceList = ['要素A', '要素B', '要素C', '要素D', '要素E'];
+
+          //  末尾から真ん中に移動させる。
+          final resultList = sourceList.reorder(4, 2);
+
+          //  要素数は変わらないはず。
+          expect(resultList.length, equals(5));
+
+          //  対象が正しく移動しているはず。
+          expect(resultList[2], equals('要素E'));
+
+          //  他の要素も正しく更新されているはず。
+          expect(resultList[0], equals('要素A'));
+          expect(resultList[1], equals('要素B'));
+          expect(resultList[3], equals('要素C'));
+          expect(resultList[4], equals('要素D'));
+        });
+
+        test('末尾から先頭に移動するケース', () {
+          //  元のリスト
+          const sourceList = ['要素A', '要素B', '要素C', '要素D', '要素E'];
+
+          //  末尾から先頭に移動させる。
+          final resultList = sourceList.reorder(4, 0);
+
+          //  要素数は変わらないはず。
+          expect(resultList.length, equals(5));
+
+          //  対象が正しく移動しているはず。
+          expect(resultList[0], equals('要素E'));
+
+          //  他の要素も正しく更新されているはず。
+          expect(resultList[1], equals('要素A'));
+          expect(resultList[2], equals('要素B'));
+          expect(resultList[3], equals('要素C'));
+          expect(resultList[4], equals('要素D'));
+        });
+
+        test('真ん中から先頭に移動するケース', () {
+          //  元のリスト
+          const sourceList = ['要素A', '要素B', '要素C', '要素D', '要素E'];
+
+          //  真ん中から先頭に移動させる。
+          final resultList = sourceList.reorder(2, 0);
+
+          //  要素数は変わらないはず。
+          expect(resultList.length, equals(5));
+
+          //  対象が正しく移動しているはず。
+          expect(resultList[0], equals('要素C'));
+
+          //  他の要素も正しく更新されているはず。
+          expect(resultList[1], equals('要素A'));
+          expect(resultList[2], equals('要素B'));
+          expect(resultList[3], equals('要素D'));
+          expect(resultList[4], equals('要素E'));
+        });
+      });
+    });
+
+    group('移動先が同じケース', () {
+      test('先頭から先頭に移動するケース', () {
+        //  元のリスト
+        const sourceList = ['要素A', '要素B', '要素C', '要素D', '要素E'];
+
+        //  先頭から先頭に移動させる。
+        final resultList = sourceList.reorder(0, 0);
+
+        //  要素数は変わらないはず。
+        expect(resultList.length, equals(5));
+
+        //  何も起こらないはず。
+        expect(resultList[0], equals('要素A'));
+        expect(resultList[1], equals('要素B'));
+        expect(resultList[2], equals('要素C'));
+        expect(resultList[3], equals('要素D'));
+        expect(resultList[4], equals('要素E'));
+      });
+
+      test('真ん中から真ん中に移動するケース', () {
+        //  元のリスト
+        const sourceList = ['要素A', '要素B', '要素C', '要素D', '要素E'];
+
+        //  真ん中から真ん中に移動させる。
+        final resultList = sourceList.reorder(2, 2);
+
+        //  要素数は変わらないはず。
+        expect(resultList.length, equals(5));
+
+        //  何も起こらないはず。
+        expect(resultList[0], equals('要素A'));
+        expect(resultList[1], equals('要素B'));
+        expect(resultList[2], equals('要素C'));
+        expect(resultList[3], equals('要素D'));
+        expect(resultList[4], equals('要素E'));
+      });
+
+      test('末尾から末尾に移動するケース', () {
+        //  元のリスト
+        const sourceList = ['要素A', '要素B', '要素C', '要素D', '要素E'];
+
+        //  末尾から末尾に移動させる。
+        final resultList = sourceList.reorder(4, 4);
+
+        //  要素数は変わらないはず。
+        expect(resultList.length, equals(5));
+
+        //  何も起こらないはず。
+        expect(resultList[0], equals('要素A'));
+        expect(resultList[1], equals('要素B'));
+        expect(resultList[2], equals('要素C'));
+        expect(resultList[3], equals('要素D'));
+        expect(resultList[4], equals('要素E'));
+      });
+    });
   });
 }

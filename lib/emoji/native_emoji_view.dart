@@ -2,10 +2,11 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:fleet_flutter/emoji/emoji_cache_store.dart';
 import 'package:fleet_flutter/platform_view.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:universal_html/html.dart' hide Text;
+import 'package:universal_html/html.dart' as html;
 
 /// 絵文字を実行環境のフォントで描画するView
 class NativeEmojiView extends StatelessWidget {
@@ -16,6 +17,7 @@ class NativeEmojiView extends StatelessWidget {
     this.size = null,
   }) : super(key: key);
 
+  //  描画サイズのデフォルト値
   static const _defaultSize = 256.0;
 
   /// 絵文字
@@ -27,18 +29,17 @@ class NativeEmojiView extends StatelessWidget {
   /// 描画サイズ
   final double? size;
 
+  //  描画サイズ (未指定の場合はデフォルト値)
+  double get _size => size ?? _defaultSize;
+
   @override
   Widget build(BuildContext context) {
-    if (!kIsWeb) {
-      return UnsupportedNativeEmojiView(
-        emoji: emoji,
-        size: size ?? _defaultSize,
-      );
-    }
+    //  Web以外のプラットフォームの場合
+    if (!kIsWeb) return _UnsupportedNativeEmojiView(emoji: emoji, size: _size);
 
     return capturable
-        ? _CapturableNativeEmojiView(emoji: emoji, size: size ?? _defaultSize)
-        : _NativeEmojiView(emoji: emoji, size: size ?? _defaultSize);
+        ? _CapturableNativeEmojiView(emoji: emoji, size: _size)
+        : _NativeEmojiView(emoji: emoji, size: _size);
   }
 }
 
@@ -60,13 +61,14 @@ class _NativeEmojiView extends StatefulWidget {
 
 class _NativeEmojiViewState extends State<_NativeEmojiView> {
   static const viewType = 'NATIVE_EMOJI_VIEW_TYPE';
-  static final validator = NodeValidatorBuilder.common()..allowInlineStyles();
+  static final validator = html.NodeValidatorBuilder.common()
+    ..allowInlineStyles();
 
   //  HtmlElementの保持用Map
   //  (HtmlElementViewがViewに登録されてから、
   //  onPlatformViewCreated()が呼ばれるまでの間、
   //  HtmlElementを保持するために使用する。)
-  static HashMap<int, HtmlElement>? elementMap = null;
+  static HashMap<int, html.HtmlElement>? elementMap = null;
 
   @override
   void initState() {
@@ -75,10 +77,10 @@ class _NativeEmojiViewState extends State<_NativeEmojiView> {
     //  全体を通して一度のみ初期化を掛ける。
     //  全体を通して一度のみ初期化を掛ける。
     if (elementMap == null) {
-      elementMap = HashMap<int, HtmlElement>();
+      elementMap = HashMap<int, html.HtmlElement>();
 
       registerViewFactory(viewType, (id) {
-        final element = DivElement()
+        final element = html.DivElement()
           ..style.width = '100%'
           ..style.height = '100%'
           ..style.textAlign = 'center'
@@ -160,15 +162,15 @@ class _CapturableNativeEmojiViewState
       '"emojione mozilla", '
       '"twemoji mozilla", '
       '"segoe ui symbol"';
-
+  static final cacheStore = EmojiCacheStore();
   static late final bool isApplePlatform = applePlatforms
-      .any((p) => window.navigator.platform?.contains(p) ?? false);
+      .any((p) => html.window.navigator.platform?.contains(p) ?? false);
 
   //  CanvasElementの保持用Map
   //  (HtmlElementViewがViewに登録されてから、
   //  onPlatformViewCreated()が呼ばれるまでの間、
   //  CanvasElementを保持するために使用する。)
-  static HashMap<int, CanvasElement>? elementMap = null;
+  static HashMap<int, html.CanvasElement>? elementMap = null;
 
   //  絵文字の画像データ
   //  (絵文字のCanvasへの描画が完了したタイミングでセットされる。)
@@ -180,39 +182,36 @@ class _CapturableNativeEmojiViewState
 
     //  全体を通して一度のみ初期化を掛ける。
     if (elementMap == null) {
-      elementMap = HashMap<int, CanvasElement>();
+      elementMap = HashMap<int, html.CanvasElement>();
 
       registerViewFactory(viewType, (id) {
-        final element = CanvasElement(width: canvasSize, height: canvasSize)
-          ..style.width = '${canvasSize}px'
-          ..style.height = '${canvasSize}px';
+        final element =
+            html.CanvasElement(width: canvasSize, height: canvasSize)
+              ..style.width = '${canvasSize}px'
+              ..style.height = '${canvasSize}px';
         elementMap![id] = element;
 
         return element;
       });
     }
+
+    //  キャッシュに存在する画像データの取得を試みる。
+    //  (存在しない場合はnullのままとなる。)
+    image = cacheStore.get(widget.emoji);
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.size,
-      height: widget.size,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Visibility(
-            visible: false,
-            maintainState: true,
-            child: HtmlElementView(
-              viewType: viewType,
-              onPlatformViewCreated: onPlatformViewCreated,
-            ),
-          ),
-          if (image != null) Image.memory(image!),
-        ],
-      ),
-    );
+    //  絵文字の画像データが存在する場合はImageで描画し、
+    //  存在しない場合はHTMLのCanvasでの描画を行う。
+    final child = image != null
+        ? Image.memory(image!)
+        : HtmlElementView(
+            viewType: viewType,
+            onPlatformViewCreated: onPlatformViewCreated,
+          );
+
+    return SizedBox(width: widget.size, height: widget.size, child: child);
   }
 
   //  CanvasElementが生成されたとき。
@@ -226,7 +225,7 @@ class _CapturableNativeEmojiViewState
   }
 
   //  絵文字を描画する。
-  void drawEmoji(CanvasElement canvas, String emoji) {
+  void drawEmoji(html.CanvasElement canvas, String emoji) {
     final context = canvas.context2D;
     final width = canvas.width!;
     final height = canvas.height!;
@@ -239,19 +238,20 @@ class _CapturableNativeEmojiViewState
   }
 
   //  絵文字の画像データを生成してWidgetを更新する。
-  void captureEmojiImage(CanvasElement canvas) {
+  void captureEmojiImage(html.CanvasElement canvas) {
     const metaPrefix = 'data:image/png;base64,';
     final base64Emoji = canvas.toDataUrl().substring(metaPrefix.length);
     final imageBytes = base64Decode(base64Emoji);
     setState(() {
       image = imageBytes;
+      cacheStore.save(widget.emoji, imageBytes);
     });
   }
 }
 
 //  未サポートのプラットフォーム用のView
-class UnsupportedNativeEmojiView extends StatelessWidget {
-  const UnsupportedNativeEmojiView({
+class _UnsupportedNativeEmojiView extends StatelessWidget {
+  const _UnsupportedNativeEmojiView({
     Key? key,
     required this.emoji,
     required this.size,

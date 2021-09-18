@@ -37,4 +37,43 @@ extension CollectionEx<T> on List<T> {
       return this[i + 1];
     });
   }
+
+  /// 指定要素を指定位置に並び替える。
+  /// (元のリストには手を加えない。)
+  List<T> reorder(int fromIndex, int toIndex) {
+    //  下に移動する場合
+    if (fromIndex < toIndex) {
+      return List.generate(length, (i) {
+        //  対象の移動前よりも前に並んでいるものはそのままの配置にする。
+        if (i < fromIndex) return this[i];
+
+        //  対象の移動前後に挟まれるものは1つ前に詰めて配置する。
+        if (fromIndex <= i && i < toIndex) return this[i + 1];
+
+        //  対象の移動後よりも後に並んでいるものはそのままの配置にする。
+        if (toIndex < i) return this[i];
+
+        return this[fromIndex];
+      });
+    }
+
+    //  上に移動する場合
+    if (fromIndex > toIndex) {
+      return List.generate(length, (i) {
+        //  対象の移動後よりも前に並んでいるものはそのままの配置にする。
+        if (i < toIndex) return this[i];
+
+        //  対象の移動前後に挟まれるものは1つ後ろにずらして配置する。
+        if (toIndex < i && i <= fromIndex) return this[i - 1];
+
+        //  対象の移動前よりも後ろに並んでいるものはそのままの配置にする。
+        if (fromIndex < i) return this[i];
+
+        return this[fromIndex];
+      });
+    }
+
+    //  並び替えを行わない場合
+    return List.of(this);
+  }
 }
