@@ -17,4 +17,9 @@ class LayerSettings {
 
   /// Fleet要素のリスト
   final List<FleetElement> elements;
+
+  /// フォーカスされているFleet要素のインデックス
+  /// (未フォーカス時はnull)
+  int? get focusedIndex =>
+      focusedId != null ? elements.indexWhere((e) => e.id == focusedId) : null;
 }

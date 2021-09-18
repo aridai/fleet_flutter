@@ -4,11 +4,11 @@ import 'package:fleet_flutter/fleet_element_view.dart';
 import 'package:flutter/material.dart';
 
 /// Fleet要素のフォーカス要求を通知するコールバック
-typedef FocusRequestedCallback = void Function(FleetElement? element);
+typedef FocusRequestedCallback = void Function(int? index);
 
 /// Fleet要素に対する操作のコールバック
 typedef InteractionCallback = void Function(
-  FleetElement element,
+  int index,
   Offset translationDelta,
   double scaleDelta,
   double rotationDelta,
@@ -19,21 +19,14 @@ class FleetCanvas extends StatefulWidget {
   const FleetCanvas({
     Key? key,
     required this.elements,
-    required this.focusedId,
+    required this.focusedIndex,
     required this.onFocusRequested,
     required this.onInteracted,
   }) : super(key: key);
 
-  /// Fleet要素のリスト
   final List<FleetElement> elements;
-
-  /// 現在フォーカス中のFleet要素のID
-  final int? focusedId;
-
-  /// フォーカスの要求を通知するコールバック
+  final int? focusedIndex;
   final FocusRequestedCallback onFocusRequested;
-
-  /// Fleet要素に対する操作を通知するコールバック
   final InteractionCallback onInteracted;
 
   @override
@@ -47,14 +40,16 @@ class _FleetCanvasState extends State<FleetCanvas> {
 
   @override
   Widget build(BuildContext context) {
-    final children = widget.elements.mapIndexed((index, element) {
-      return FleetElementView(
-        key: ValueKey(element.id),
-        element: element,
-        isFocused: widget.focusedId == element.id,
-        onFocusRequested: () => widget.onFocusRequested(element),
-      );
-    }).toList(growable: false);
+    final children = widget.elements.mapIndexed(
+      (index, element) {
+        return FleetElementView(
+          key: ValueKey(element.id),
+          element: element,
+          isFocused: widget.focusedIndex == index,
+          onFocusRequested: () => widget.onFocusRequested(index),
+        );
+      },
+    ).toList(growable: false);
 
     return GestureDetector(
       onTap: _onTap,
@@ -89,10 +84,9 @@ class _FleetCanvasState extends State<FleetCanvas> {
     final dragDelta = details.focalPoint - _focalPoint!;
 
     //  フォーカス中であれば、コールバックで通知を行う。
-    if (widget.focusedId != null) {
-      final element =
-          widget.elements.firstWhere((e) => e.id == widget.focusedId);
-      widget.onInteracted(element, dragDelta, scaleDelta, rotationDelta);
+    final index = widget.focusedIndex;
+    if (index != null) {
+      widget.onInteracted(index, dragDelta, scaleDelta, rotationDelta);
     }
 
     //  値を記録しておく。

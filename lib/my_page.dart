@@ -66,13 +66,13 @@ class _MyPageState extends State<MyPage> {
 
         return StreamBuilder<int?>(
           initialData: null,
-          stream: bloc.focusedId,
+          stream: bloc.focusedIndex,
           builder: (context, snapshot) {
-            final focusedId = snapshot.data;
+            final focusedIndex = snapshot.data;
 
             return FleetCanvas(
               elements: elements,
-              focusedId: focusedId,
+              focusedIndex: focusedIndex,
               onFocusRequested: bloc.onFocusRequested,
               onInteracted: bloc.onElementInteracted,
             );
