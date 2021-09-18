@@ -5,6 +5,8 @@ import 'package:fleet_flutter/emoji/emoji_picker.dart';
 import 'package:fleet_flutter/fleet_canvas.dart';
 import 'package:fleet_flutter/fleet_element.dart';
 import 'package:fleet_flutter/fleet_element_factory.dart';
+import 'package:fleet_flutter/layer/layer_dialog.dart';
+import 'package:fleet_flutter/layer/layer_settings.dart';
 import 'package:fleet_flutter/my_page_bloc.dart';
 import 'package:fleet_flutter/output_view.dart';
 import 'package:fleet_flutter/text/text_input_dialog.dart';
@@ -144,6 +146,23 @@ class _MyPageState extends State<MyPage> {
                   final bytes = await image.readAsBytes();
                   bloc.onImagePicked(image.name, bytes);
                 }
+              },
+            ),
+
+            //  レイヤ編集
+            ListTile(
+              leading: const Icon(Icons.layers),
+              title: const Text('レイヤ編集'),
+              onTap: () async {
+                Navigator.pop(context);
+
+                //  レイヤダイアログを表示する。
+                final params = bloc.layerSettings;
+                final result = await showDialog<LayerSettings>(
+                  context: context,
+                  builder: (context) => LayerDialog(settings: params),
+                );
+                if (result != null) bloc.onLayerSettingsUpdated(result);
               },
             ),
 

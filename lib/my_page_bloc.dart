@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:fleet_flutter/collection_extensions.dart';
 import 'package:fleet_flutter/fleet_element.dart';
 import 'package:fleet_flutter/fleet_element_factory.dart';
+import 'package:fleet_flutter/layer/layer_settings.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// MyPageのBLoC
@@ -17,12 +18,19 @@ class MyPageBloc {
   final _elements = BehaviorSubject<List<FleetElement>>.seeded(const []);
   final _focusedId = BehaviorSubject<int?>.seeded(null);
 
+  //  フォーカス時の並び順の固定が有効かどうか
+  bool _isOrderPinningEnabled = false;
+
   /// Fleetの要素リスト
   Stream<List<FleetElement>> get elements => _elements.stream;
 
   /// フォーカス中のFleet要素のID
   /// (未選択時はnull)
   Stream<int?> get focusedId => _focusedId.stream;
+
+  /// レイヤ設定
+  LayerSettings get layerSettings =>
+      LayerSettings(_isOrderPinningEnabled, _focusedId.value, _elements.value);
 
   /// Fleet要素のフォーカスが要求されたとき。
   void onFocusRequested(FleetElement? element) {
@@ -33,13 +41,17 @@ class MyPageBloc {
     }
 
     //  フォーカスが要求された場合
-    //  (必要に応じて対象要素を末尾に並び替える。)
-    final elements = _elements.value;
-    final index = elements.indexWhere((e) => e.id == element.id);
-    final updatedElements = elements.toTail(index);
-
-    _elements.value = updatedElements;
     _focusedId.value = element.id;
+
+    //  設定に応じて、フォーカス対象のFleet要素を最前面表示にする。
+    final shouldReorder = !_isOrderPinningEnabled;
+    if (shouldReorder) {
+      final elements = _elements.value;
+      final index = elements.indexWhere((e) => e.id == element.id);
+      final updatedElements = elements.toTail(index);
+
+      _elements.value = updatedElements;
+    }
   }
 
   /// Fleet要素に対する操作が行われたとき。
@@ -90,6 +102,13 @@ class MyPageBloc {
     //  新たに画像要素を追加する。
     final element = _factory.createImage(fileName, imageBytes);
     _addNewElement(element);
+  }
+
+  /// レイヤ設定が更新されたとき。
+  void onLayerSettingsUpdated(LayerSettings result) {
+    _isOrderPinningEnabled = result.isOrderPinningEnabled;
+    _focusedId.value = result.focusedId;
+    _elements.value = result.elements;
   }
 
   /// 終了処理を行う。
