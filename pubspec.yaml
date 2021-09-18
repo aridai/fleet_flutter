@@ -18,6 +18,7 @@ dependencies:
   image_picker: ^0.8.4
   flutter_emoji:
     git: https://github.com/cek-cek/flutter-emoji
+  reorderables: ^0.4.1
 
 dev_dependencies:
   test: ^1.17.11
