@@ -2,14 +2,14 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:fleet_flutter/collection_extensions.dart';
-import 'package:fleet_flutter/fleet_element.dart';
-import 'package:fleet_flutter/fleet_element_factory.dart';
+import 'package:fleet_flutter/fleet/fleet_element.dart';
+import 'package:fleet_flutter/fleet/fleet_element_factory.dart';
 import 'package:fleet_flutter/layer/layer_settings.dart';
 import 'package:rxdart/rxdart.dart';
 
-/// MyPageのBLoC
-class MyPageBloc {
-  MyPageBloc(this._factory) {
+/// FleetPageのBLoC
+class FleetPageBloc {
+  FleetPageBloc(this._factory) {
     _elements.value = [_factory.createText('Fleetを使ってみましょう!')];
   }
 

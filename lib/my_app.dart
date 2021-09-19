@@ -1,4 +1,4 @@
-import 'package:fleet_flutter/my_page.dart';
+import 'package:fleet_flutter/fleet/fleet_page.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: kIsWeb ? 'KosugiMaru' : null,
       ),
-      home: const MyPage(),
+      home: const FleetPage(),
     );
   }
 }

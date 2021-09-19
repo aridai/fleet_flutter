@@ -1,5 +1,5 @@
 import 'package:fleet_flutter/collection_extensions.dart';
-import 'package:fleet_flutter/fleet_element.dart';
+import 'package:fleet_flutter/fleet/fleet_element.dart';
 import 'package:fleet_flutter/layer/layer_settings.dart';
 import 'package:rxdart/rxdart.dart';
 

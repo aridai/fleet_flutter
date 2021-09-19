@@ -1,4 +1,4 @@
-import 'package:fleet_flutter/fleet_element.dart';
+import 'package:fleet_flutter/fleet/fleet_element.dart';
 
 /// レイヤ設定
 class LayerSettings {

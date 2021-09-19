@@ -1,5 +1,5 @@
 import 'package:fleet_flutter/emoji/native_emoji_view.dart';
-import 'package:fleet_flutter/fleet_element.dart';
+import 'package:fleet_flutter/fleet/fleet_element.dart';
 import 'package:flutter/material.dart';
 
 /// Fleet要素のView

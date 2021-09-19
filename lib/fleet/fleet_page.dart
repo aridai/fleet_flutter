@@ -2,12 +2,12 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:fleet_flutter/emoji/emoji_picker.dart';
-import 'package:fleet_flutter/fleet_canvas.dart';
-import 'package:fleet_flutter/fleet_element.dart';
-import 'package:fleet_flutter/fleet_element_factory.dart';
+import 'package:fleet_flutter/fleet/fleet_canvas.dart';
+import 'package:fleet_flutter/fleet/fleet_element.dart';
+import 'package:fleet_flutter/fleet/fleet_element_factory.dart';
+import 'package:fleet_flutter/fleet/fleet_page_bloc.dart';
 import 'package:fleet_flutter/layer/layer_dialog.dart';
 import 'package:fleet_flutter/layer/layer_settings.dart';
-import 'package:fleet_flutter/my_page_bloc.dart';
 import 'package:fleet_flutter/output_view.dart';
 import 'package:fleet_flutter/text/text_input_dialog.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,14 +15,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 
-class MyPage extends StatefulWidget {
-  const MyPage({Key? key}) : super(key: key);
+/// Fleet機能のページ
+class FleetPage extends StatefulWidget {
+  const FleetPage({Key? key}) : super(key: key);
 
   @override
-  _MyPageState createState() => _MyPageState();
+  _FleetPageState createState() => _FleetPageState();
 }
 
-class _MyPageState extends State<MyPage> {
+class _FleetPageState extends State<FleetPage> {
   final _key = GlobalKey();
 
   static final picker = ImagePicker();
