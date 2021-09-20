@@ -65,6 +65,12 @@ class WebOutputView extends StatefulWidget {
   /// 初期化処理を行う。
   /// (アプリ起動時に一度のみ行う。)
   static void init() {
+    //  TODO: 実装方法を変更
+    //  > Height of Platform View type: [OUTPUT_VIEW] may not be set. Defaulting to `height: 100%`.
+    //  > Set `style.height` to any appropriate value to stop this message.
+    //  > Width of Platform View type: [OUTPUT_VIEW] may not be set. Defaulting to `width: 100%`.
+    //  > Set `style.width` to any appropriate value to stop this message.
+
     if (kIsWeb) {
       _element = ImageElement();
       registerViewFactory(_viewType, (id) => _element);

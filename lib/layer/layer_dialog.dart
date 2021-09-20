@@ -1,4 +1,4 @@
-import 'package:fleet_flutter/fleet_element.dart';
+import 'package:fleet_flutter/fleet/fleet_element.dart';
 import 'package:fleet_flutter/layer/layer_cell.dart';
 import 'package:fleet_flutter/layer/layer_dialog_bloc.dart';
 import 'package:fleet_flutter/layer/layer_settings.dart';
