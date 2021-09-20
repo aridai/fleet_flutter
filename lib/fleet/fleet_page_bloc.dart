@@ -5,19 +5,35 @@ import 'package:fleet_flutter/collection_extensions.dart';
 import 'package:fleet_flutter/fleet/fleet_element.dart';
 import 'package:fleet_flutter/fleet/fleet_element_factory.dart';
 import 'package:fleet_flutter/layer/layer_settings.dart';
+import 'package:fleet_flutter/share/capture_service.dart';
+import 'package:fleet_flutter/share/share_dialog.dart';
+import 'package:fleet_flutter/share/share_link_generator.dart';
+import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// FleetPageのBLoC
 class FleetPageBloc {
-  FleetPageBloc(this._factory) {
-    _elements.value = [_factory.createText('Fleetを使ってみましょう!')];
+  FleetPageBloc(
+    List<FleetElement>? existingElements,
+    this._factory,
+    this._captureService,
+    this._shareLinkGenerator,
+  ) {
+    final initial = existingElements ?? [_factory.createText(_initialText)];
+    _elements.value = initial;
   }
 
+  //  初期表示のテキスト
+  static const _initialText = 'Fleetを使ってみましょう!';
+
   final FleetElementFactory _factory;
+  final CaptureService _captureService;
+  final ShareLinkGenerator _shareLinkGenerator;
 
   final _elements = BehaviorSubject<List<FleetElement>>.seeded(const []);
   final _focusedIndex = BehaviorSubject<int?>.seeded(null);
   final _layerDialogRequested = PublishSubject<LayerSettings>();
+  final _shareDialogRequested = PublishSubject<ShareDialogArgs>();
 
   //  フォーカス時の並び順の固定が有効かどうか
   bool _isOrderPinningEnabled = false;
@@ -32,6 +48,10 @@ class FleetPageBloc {
   /// レイヤダイアログの表示要求を通知するStream
   Stream<LayerSettings> get layerDialogRequested =>
       _layerDialogRequested.stream;
+
+  /// 共有ダイアログの表示要求を通知するStream
+  Stream<ShareDialogArgs> get shareDialogRequested =>
+      _shareDialogRequested.stream;
 
   /// Fleet要素のフォーカスが要求されたとき。
   void onFocusRequested(int? index) {
@@ -122,11 +142,22 @@ class FleetPageBloc {
     _elements.value = result.elements;
   }
 
+  /// キャプチャメニュー項目がタップされたとき。
+  Future<void> onCaptureMenuTapped(GlobalKey key) async {
+    //  キャプチャ画像と共有リンクを生成してダイアログの表示要求を投げる。
+    final image = await _captureService.capture(key);
+    final link = _shareLinkGenerator.generate(_elements.value);
+    final args = ShareDialogArgs(image, link);
+
+    _shareDialogRequested.add(args);
+  }
+
   /// 終了処理を行う。
   void dispose() {
     _elements.close();
     _focusedIndex.close();
     _layerDialogRequested.close();
+    _shareDialogRequested.close();
   }
 
   //  新しい要素を追加をUIに反映させる。

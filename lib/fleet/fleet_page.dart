@@ -1,25 +1,28 @@
-import 'dart:typed_data';
-import 'dart:ui';
-
+import 'package:fleet_flutter/dependency.dart';
 import 'package:fleet_flutter/emoji/emoji_picker.dart';
 import 'package:fleet_flutter/fleet/fleet_canvas.dart';
 import 'package:fleet_flutter/fleet/fleet_element.dart';
-import 'package:fleet_flutter/fleet/fleet_element_factory.dart';
+import 'package:fleet_flutter/fleet/fleet_page_args.dart';
 import 'package:fleet_flutter/fleet/fleet_page_bloc.dart';
 import 'package:fleet_flutter/fleet/fleet_page_bottom_sheet.dart';
 import 'package:fleet_flutter/layer/layer_dialog.dart';
 import 'package:fleet_flutter/layer/layer_settings.dart';
-import 'package:fleet_flutter/output_view.dart';
+import 'package:fleet_flutter/share/share_dialog.dart';
 import 'package:fleet_flutter/text/text_input_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// Fleet機能のページ
 class FleetPage extends StatefulWidget {
-  const FleetPage({Key? key}) : super(key: key);
+  const FleetPage({
+    Key? key,
+    required this.args,
+  }) : super(key: key);
+
+  /// 引数
+  final FleetPageArgs args;
 
   @override
   _FleetPageState createState() => _FleetPageState();
@@ -36,9 +39,22 @@ class _FleetPageState extends State<FleetPage> {
   void initState() {
     super.initState();
 
-    bloc = FleetPageBloc(FleetElementFactory());
+    final existingElements = widget.args.maybeMap(
+      edit: (edit) => edit.existingElements,
+      orElse: () => null,
+    );
+    bloc = FleetPageBloc(
+      existingElements,
+      Dependency.resolve(),
+      Dependency.resolve(),
+      Dependency.resolve(),
+    );
+
     bloc.layerDialogRequested
         .listen((settings) => _showLayerDialog(settings))
+        .addTo(_compositeSubscription);
+    bloc.shareDialogRequested
+        .listen((args) => _showShareDialog(args))
         .addTo(_compositeSubscription);
   }
 
@@ -114,7 +130,7 @@ class _FleetPageState extends State<FleetPage> {
         },
         onCaptureMenuTap: () async {
           Navigator.of(context).pop();
-          await _showCaptureDialog();
+          bloc.onCaptureMenuTapped(_key);
         },
       ),
     );
@@ -166,53 +182,11 @@ class _FleetPageState extends State<FleetPage> {
     if (result != null) bloc.onLayerSettingsUpdated(result);
   }
 
-  //  キャプチャダイアログ (仮) を表示する。
-  Future<void> _showCaptureDialog() async {
-    //  TODO: 本実装 (BLoC側にキャプチャ要求を送り、フォーカスの制御を行わせる必要があるかも)
-
-    //  キャンバスをキャプチャする。
-    final image = await _capture();
-
-    //  TODO: UIの本実装
-    //  とりあえずダイアログで表示させてみる。
+  //  共有ダイアログを表示する。
+  Future<void> _showShareDialog(ShareDialogArgs args) async {
     await showDialog<void>(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('キャプチャ結果'),
-          content: OutputView(
-            imageBytes: image.imageBytes,
-            width: image.width,
-            height: image.height,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
+      builder: (context) => ShareDialog(args: args),
     );
   }
-
-  //  Fleet描画部分をキャプチャする。
-  Future<CapturedImage> _capture() async {
-    final boundary =
-        _key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-    final image = await boundary.toImage();
-    final byteData = await image.toByteData(format: ImageByteFormat.png);
-    final bytes = byteData!.buffer.asUint8List();
-
-    return CapturedImage(image.width, image.height, bytes);
-  }
-}
-
-//  キャプチャされた画像
-class CapturedImage {
-  const CapturedImage(this.width, this.height, this.imageBytes);
-
-  final int width;
-  final int height;
-  final Uint8List imageBytes;
 }
