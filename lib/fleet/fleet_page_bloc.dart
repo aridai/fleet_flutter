@@ -17,6 +17,7 @@ class FleetPageBloc {
 
   final _elements = BehaviorSubject<List<FleetElement>>.seeded(const []);
   final _focusedIndex = BehaviorSubject<int?>.seeded(null);
+  final _layerDialogRequested = PublishSubject<LayerSettings>();
 
   //  フォーカス時の並び順の固定が有効かどうか
   bool _isOrderPinningEnabled = false;
@@ -28,18 +29,9 @@ class FleetPageBloc {
   /// (未選択時はnull)
   Stream<int?> get focusedIndex => _focusedIndex.stream;
 
-  /// レイヤ設定
-  LayerSettings get layerSettings {
-    final focusedIndex = _focusedIndex.value;
-    final focusedId =
-        focusedIndex != null ? _elements.value[focusedIndex].id : null;
-
-    return LayerSettings(
-      _isOrderPinningEnabled,
-      focusedId,
-      _elements.value,
-    );
-  }
+  /// レイヤダイアログの表示要求を通知するStream
+  Stream<LayerSettings> get layerDialogRequested =>
+      _layerDialogRequested.stream;
 
   /// Fleet要素のフォーカスが要求されたとき。
   void onFocusRequested(int? index) {
@@ -112,6 +104,17 @@ class FleetPageBloc {
     _addNewElement(element);
   }
 
+  /// レイヤメニュー項目がタップされたとき。
+  void onLayerMenuTapped() {
+    final focusedIndex = _focusedIndex.value;
+    final focusedId =
+        focusedIndex != null ? _elements.value[focusedIndex].id : null;
+    final currentSettings =
+        LayerSettings(_isOrderPinningEnabled, focusedId, _elements.value);
+
+    _layerDialogRequested.add(currentSettings);
+  }
+
   /// レイヤ設定が更新されたとき。
   void onLayerSettingsUpdated(LayerSettings result) {
     _isOrderPinningEnabled = result.isOrderPinningEnabled;
@@ -123,6 +126,7 @@ class FleetPageBloc {
   void dispose() {
     _elements.close();
     _focusedIndex.close();
+    _layerDialogRequested.close();
   }
 
   //  新しい要素を追加をUIに反映させる。
