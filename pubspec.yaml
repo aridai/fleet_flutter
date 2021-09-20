@@ -19,11 +19,14 @@ dependencies:
   flutter_emoji:
     git: https://github.com/cek-cek/flutter-emoji
   reorderables: ^0.4.1
+  get_it: ^7.2.0
+  json_annotation: ^4.1.0
 
 dev_dependencies:
   test: ^1.17.11
   build_runner: ^2.1.1
   freezed: ^0.14.2
+  json_serializable: ^5.0.1
 
 flutter:
   uses-material-design: true
