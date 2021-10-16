@@ -6,11 +6,13 @@ import 'package:flutter/rendering.dart';
 
 /// キャプチャ処理
 class CaptureService {
+  static const _pixelRatio = 2.0;
+
   /// 画面をキャプチャする。
   Future<CapturedImage> capture(GlobalKey key) async {
     final boundary =
         key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-    final image = await boundary.toImage();
+    final image = await boundary.toImage(pixelRatio: _pixelRatio);
     final byteData = await image.toByteData(format: ImageByteFormat.png);
     final bytes = byteData!.buffer.asUint8List();
 
