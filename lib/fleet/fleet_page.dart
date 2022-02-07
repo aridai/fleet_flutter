@@ -9,7 +9,6 @@ import 'package:fleet_flutter/layer/layer_dialog.dart';
 import 'package:fleet_flutter/layer/layer_settings.dart';
 import 'package:fleet_flutter/share/share_dialog.dart';
 import 'package:fleet_flutter/text/text_input_dialog.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rxdart/rxdart.dart';
