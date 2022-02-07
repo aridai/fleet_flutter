@@ -130,7 +130,7 @@ class _EmojiPickerState extends State<EmojiPicker> {
           child: ListTile(
             leading: NativeEmojiView(
               emoji: data.emoji,
-              capturable: false,
+              capturable: true,
               size: 32,
             ),
             title: Text(data.name),
