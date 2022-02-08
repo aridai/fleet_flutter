@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:fleet_flutter/collection_extensions.dart';
 import 'package:fleet_flutter/fleet/fleet_element.dart';
